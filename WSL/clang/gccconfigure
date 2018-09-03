@@ -1,0 +1,6 @@
+#! /bin/sh
+arg1=`wslpath -a $1`
+
+cd $arg1
+./configure
+
