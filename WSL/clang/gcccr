@@ -1,0 +1,23 @@
+#! /bin/sh
+echo "---------gcc compile & link-------------"
+arg1=`wslpath -a $1`
+echo fileDirname:$arg1
+arg2=`wslpath -a $2`
+echo fileBasenameNoExtension:$arg2
+arg3=`wslpath -a $3`
+echo file:$arg3
+
+echo -e "gcc -g -o $arg2 $arg3\n";
+cd "$arg1"
+date
+gcc -g -o $arg2 $arg3;
+
+date
+echo --------------end--------------------
+echo 
+echo "================Run=================="
+echo " $arg2 "
+date
+$arg2
+date
+echo "===============Run end==============="
