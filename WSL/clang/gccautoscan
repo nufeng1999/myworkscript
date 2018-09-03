@@ -1,0 +1,84 @@
+#! /bin/sh
+arg1=`wslpath -a $1`
+
+cd $arg1
+# backing up old configure.ac
+if [ -f "./configure.ac" ];then
+    echo "backing up old configure.ac to configure.ac.old"
+    rm -f ./bak/configure.ac.old
+    mv ./configure.ac ./bak/configure.ac.old
+#else
+    #echo "文件不存在"
+    
+fi
+if [ -f "./depcomp" ];then
+    :
+else
+    #echo "文件不存在"
+    cp -a /usr/share/automake-1.15/depcomp ./
+fi
+
+
+/usr/bin/autoscan
+returnvalue=$?
+echo "autoscan return: $returnvalue"
+if [ $returnvalue -ne 0 ]; then
+    echo "autoscan failed"
+    if [ -f "./bak/configure.ac.old" ];then
+        echo "恢复以前的文件"
+        mv ./bak/configure.ac.old  ./configure.ac
+        exit 1
+    fi
+else
+    echo "autoscan succeed"
+    mv configure.scan configure.ac
+    acconfigfiles=`grep "AC_CONFIG_FILES(\[Makefile\])" ./configure.ac`
+    [[ $acconfigfiles =~ "" ]] && sed -i "s/AC_OUTPUT/AC_CONFIG_FILES(\[Makefile\])\nAC_OUTPUT/g" ./configure.ac
+    
+    mainfile="main.c"
+    if [ -f "./main.c" ];then
+        mainfile="main.c"
+    else
+        mainfile=`ls -1 *.c |head -1`
+        [[ $mainfile =~ "" ]] && mainfile="main.c" 
+    fi
+    sed -i "s/AC_INIT(\[FULL-PACKAGE-NAME\], \[VERSION\], \[BUG-REPORT-ADDRESS\])/#AC_INIT(\[FULL-PACKAGE-NAME\], \[VERSION\], \[BUG-REPORT-ADDRESS\])\nAC_INIT($mainfile,1.0,test@qq.com)\nAM_INIT_AUTOMAKE/g" ./configure.ac
+
+fi
+# generate Makefile.am
+# backing up old Makefile.am
+if [ -f "./Makefile.am" ];then
+    echo "backing up old Makefile.am to Makefile.am.old"
+    rm -f ./Makefile.am.old
+    mv ./Makefile.am ./Makefile.am.old
+#else
+    #echo "文件不存在"
+    
+fi
+cat > Makefile.am << END_TEXT
+AutoMAKE_OPTIONS= foreign
+# Note:target part
+bin_PROGRAMS = main
+# noinst_PROGRAMS = 
+# 
+# Note:source part
+main_SOURCES =
+# main_LDADD =
+# main_LDFLAGS =
+# main_LDFLAGS =
+# main_DEPENDENCIES =
+# 
+# Note:lib part
+# lib_LIBRARIES =
+# _a_SOURCES =
+# _a_LDADD =
+# _a_LIBADD =
+# _a_LDFLAGS =
+# 
+# Note:header part
+# include_HEADERS = 
+# 
+# Note:data part
+# data_DATA =
+END_TEXT
+exit 0
