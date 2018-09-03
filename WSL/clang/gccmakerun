@@ -1,0 +1,45 @@
+#! /bin/sh
+arg1=`wslpath -a $1`
+
+if [ -f "./Makefile" ];then
+    make clean
+    returnvalue=$?
+    echo "make clean return: $returnvalue"
+    if [ $returnvalue -ne 0 ]; then
+        echo "make clean failed"
+        exit 1
+    else
+        :
+    fi
+    #else
+        #echo "文件不存在"
+fi
+
+/usr/bin/autoconf
+returnvalue=$?
+if [ $returnvalue -ne 0 ]; then echo -e "\033[31m autoconf failed \033[0m"; exit 1; else echo -e "\033[32m autoconf succeed \033[0m"; fi
+cd $arg1
+/usr/bin/automake --add-missing
+returnvalue=$?
+if [ $returnvalue -ne 0 ]; then echo -e "\033[31m automake failed \033[0m"; exit 1; else echo -e "\033[32m automake succeed \033[0m"; fi
+echo "run ./configure" 
+./configure
+returnvalue=$?
+echo "configure return: $returnvalue"
+if [ $returnvalue -ne 0 ]; then
+    echo "configure failed"
+    exit 1
+else
+    :
+fi
+make
+returnvalue=$?
+echo "make return: $returnvalue"
+if [ $returnvalue -ne 0 ]; then
+    echo "make failed"
+    exit 1
+else
+    :
+fi
+echo ------------run-------------- 
+./main
