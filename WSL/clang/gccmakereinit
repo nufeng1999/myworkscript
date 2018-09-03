@@ -1,0 +1,30 @@
+#! /bin/sh
+#arg1=`wslpath -a $1`
+arg2=`wslpath -a $2`
+cd $arg2
+
+rm -rf .deps
+rm -rf autom4te.cache
+rm -f aclocal.m4
+rm -f autoscan.log
+rm -f ChangeLog
+rm -f compile
+rm -f config.h.in
+rm -f config.h.in.old
+rm -f configure
+rm -f configure.ac
+rm -f configure.ac.old
+rm -f depcomp
+rm -f install-sh
+rm -f Makefile.am
+rm -f Makefile.am.old
+rm -f Makefile.in
+rm -f config.h
+rm -f config.log
+rm -f config.status
+rm -f Makefile
+rm -f stamp-h1
+rm -f *.o
+rm -f main
+cd $arg2 
+$1/gccmakeinit $1  $2
