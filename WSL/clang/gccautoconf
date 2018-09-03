@@ -1,0 +1,7 @@
+#! /bin/sh
+arg1=`wslpath -a $1`
+
+cd $arg1
+/usr/bin/autoconf
+returnvalue=$?
+if [ $returnvalue -ne 0 ]; then echo " autoconf failed "; exit 1; else echo " autoconf succeed "; fi
