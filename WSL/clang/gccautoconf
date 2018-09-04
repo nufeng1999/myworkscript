@@ -1,7 +1,11 @@
 #! /bin/sh
+#
+# 根据 Makefile.am configure.ac aclocal->aclocal.m4 生成 configure 
+# autoconf:将configure.ac中的宏展开，生成configure脚本。这个过程可能要用到aclocal.m4中定义的宏。
+#
 arg1=`wslpath -a $1`
 
 cd $arg1
 /usr/bin/autoconf
 returnvalue=$?
-if [ $returnvalue -ne 0 ]; then echo " autoconf failed "; exit 1; else echo " autoconf succeed "; fi
+if [ $returnvalue -ne 0 ]; then echo -e "\033[31m autoconf failed \033[0m"; exit 1; else echo -e "\033[32m autoconf succeed \033[0m"; fi
