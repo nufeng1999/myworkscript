@@ -1,6 +1,12 @@
 #! /bin/sh
+#
+# 生成 autoconfig.h,Makefile
+#
 arg1=`wslpath -a $1`
 
 cd $arg1
+
+
+
 ./configure
 
