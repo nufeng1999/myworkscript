@@ -1,24 +1,29 @@
 #! /bin/sh
+#
+#
+#
 arg1=$1
 arg2=`wslpath -a $2`
 cd $arg2
 echo "---------------inti start for makefile--------------------"
+# 生成 configure.ac
 $arg1/gccautoscan  $2
 returnvalue=$?
 if [ $returnvalue -ne 0 ]; then echo " gccautoscan failed "; exit 1; fi
-
+# 生成 config.h.in
 $arg1/gccautoheader  $2
 returnvalue=$?
 if [ $returnvalue -ne 0 ]; then echo " gccautoheader failed "; exit 1; fi
-
+# 生成 aclocal.m4
 $arg1/gccaclocal  $2
 returnvalue=$?
 if [ $returnvalue -ne 0 ]; then echo " gccaclocal failed "; exit 1; fi
 
+# 生成 configure
 $arg1/gccautoconf  $2
 returnvalue=$?
 if [ $returnvalue -ne 0 ]; then echo " gccautoconf failed "; exit 1; fi
-
+# 生成 Makefile.in
 $arg1/gccautomake  $2
 returnvalue=$?
 if [ $returnvalue -ne 0 ]; then echo " gccautomake failed "; exit 1; fi
