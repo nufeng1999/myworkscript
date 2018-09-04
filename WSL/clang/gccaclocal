@@ -1,5 +1,8 @@
 #! /bin/sh
-
+#
+# 根据已经安装的宏，用户定义宏和acinclude.m4文件中的宏将 configure.ac文件所需要的宏集中定义到文件 aclocal.m4。
+# create aclocal.m4 by scanning configure.ac
+#
 arg1=`wslpath -a $1`
 
 cd $arg1
