@@ -1,3 +1,24 @@
 #! /bin/sh
+#
+# 根据 Makefile.am configure.ac 重新构建项目程序
+#
 echo "---------gcc make compile & link-------------"
+arg1=`wslpath -a $1`
+cd $arg1
+echo "--------- run autoconf ----------"
+/usr/bin/autoconf
+returnvalue=$?
+if [ $returnvalue -ne 0 ]; then echo -e "\033[31m autoconf failed \033[0m"; exit 1; else echo -e "\033[32m autoconf succeed \033[0m"; fi
+cd $arg1
+echo "--------- run automake ----------"
+/usr/bin/automake --add-missing
+returnvalue=$?
+if [ $returnvalue -ne 0 ]; then echo -e "\033[31m automake failed \033[0m"; exit 1; else echo -e "\033[32m automake succeed \033[0m"; fi
+echo "--------- run configure ----------"
+./configure
+returnvalue=$?
+if [ $returnvalue -ne 0 ]; then echo -e "\033[31m configure failed \033[0m"; exit 1; else echo -e "\033[32m configure succeed \033[0m"; fi
+echo "--------- run make ----------"
 make
+returnvalue=$?
+if [ $returnvalue -ne 0 ]; then echo -e "\033[31m make failed \033[0m"; exit 1; else echo -e "\033[32m make succeed \033[0m"; fi
