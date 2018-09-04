@@ -1,4 +1,10 @@
 #! /bin/sh
+#
+# 根据 Makefile.am configure.ac aclocal->aclocal.m4 生成 Makefile.in
+# automake将Makefile.am中定义的结构建立Makefile.in，然后configure脚本将生成的Makefile.in文件转换为Makefile。
+# 如果在configure.ac中定义了一些特殊的宏，比如AC_PROG_LIBTOOL，它会调用libtoolize，否则它会自己产生config.guess和config.sub
+#
+
 arg1=`wslpath -a $1`
 cd $arg1
 
@@ -29,4 +35,4 @@ fi
 
 /usr/bin/automake --add-missing
 returnvalue=$?
-if [ $returnvalue -ne 0 ]; then echo " automake failed "; exit 1; else echo " automake succeed "; fi
+if [ $returnvalue -ne 0 ]; then echo -e "\033[31m automake failed \033[0m"; exit 1; else echo -e "\033[32m automake succeed \033[0m"; fi
