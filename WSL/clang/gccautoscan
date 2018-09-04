@@ -1,4 +1,7 @@
 #! /bin/sh
+#
+#   根据源文件生成 configure.scan -> configure.ac
+#
 arg1=`wslpath -a $1`
 
 cd $arg1
@@ -21,7 +24,7 @@ fi
 
 /usr/bin/autoscan
 returnvalue=$?
-echo "autoscan return: $returnvalue"
+#echo "autoscan return: $returnvalue"
 if [ $returnvalue -ne 0 ]; then
     echo "autoscan failed"
     if [ -f "./bak/configure.ac.old" ];then
@@ -30,7 +33,7 @@ if [ $returnvalue -ne 0 ]; then
         exit 1
     fi
 else
-    echo "autoscan succeed"
+    echo -e "\033[32m autoscan succeed \033[0m"
     mv configure.scan configure.ac
     acconfigfiles=`grep "AC_CONFIG_FILES(\[Makefile\])" ./configure.ac`
     [[ $acconfigfiles =~ "" ]] && sed -i "s/AC_OUTPUT/AC_CONFIG_FILES(\[Makefile\])\nAC_OUTPUT/g" ./configure.ac
@@ -42,8 +45,12 @@ else
         mainfile=`ls -1 *.c |head -1`
         [[ $mainfile =~ "" ]] && mainfile="main.c" 
     fi
-    sed -i "s/AC_INIT(\[FULL-PACKAGE-NAME\], \[VERSION\], \[BUG-REPORT-ADDRESS\])/#AC_INIT(\[FULL-PACKAGE-NAME\], \[VERSION\], \[BUG-REPORT-ADDRESS\])\nAC_INIT($mainfile,1.0,test@qq.com)\nAM_INIT_AUTOMAKE/g" ./configure.ac
-
+    sed -i "s/AC_INIT(\[FULL-PACKAGE-NAME\], \[VERSION\], \[BUG-REPORT-ADDRESS\])/#AC_INIT(\[FULL-PACKAGE-NAME\], \[VERSION\], \[BUG-REPORT-ADDRESS\])\nAC_INIT($mainfile,1.0,test@qq.com)\nAM_INIT_AUTOMAKE(\[subdir-objects\])/g" ./configure.ac
+    #AM_INIT_AUTOMAKE([subdir-objects])
+    #AC_CONFIG_MACRO_DIR([m4]) #用于libtoolize
+    #AM_PROG_CC_C_O   #子目录的编译
+    #AC_PROG_LIBTOOL
+    #AC_SUBST(LIBTOOL_DEPS)
 fi
 # generate Makefile.am
 # backing up old Makefile.am
@@ -57,6 +64,20 @@ if [ -f "./Makefile.am" ];then
 fi
 cat > Makefile.am << END_TEXT
 AutoMAKE_OPTIONS= foreign
+# SUBDIRS 表示在处理目录之前，要递归处理哪些子目录
+# EXTRA_DIST 将哪些文件一起打包。
+# HEADERS 头文件
+# PROGRAMS 表示可执行文件
+# LIBRARIES 表示库文件 
+# LTLIBRARIES 也是表示库文件，前面的LT表示libtool。
+# SCRIPTS 脚本文件，可以被用于执行。如：example_SCRIPTS，如果用这样的话，需要定义安装目录下的example目录
+# DATA 数据文件，不能执行。
+# \$(prefix),表示安装的路径
+# 静态库，XXXX_LTLIBRARIES或者XXXX_LIBRARIES就可以了。如果不需要安装到系统，将XXXX换成noinst
+# 动态库，XXX.so文件，需要用_PROGRAMS类型，安装到lib下，则为lib_PROGRAMS=
+
+
+
 # Note:target part
 bin_PROGRAMS = main
 # noinst_PROGRAMS = 
