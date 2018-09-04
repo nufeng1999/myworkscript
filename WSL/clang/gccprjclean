@@ -1,0 +1,61 @@
+#! /bin/sh
+#
+# 清理源代码无关的文件
+#
+arg1=`wslpath -a $1`
+cd $arg1
+
+rm -rf .deps
+rm -rf autom4te.cache
+rm -f aclocal.m4
+rm -f autoscan.log
+rm -f ChangeLog
+rm -f compile
+rm -f config.h.in
+rm -f config.h.in~
+rm -f config.h.in.old
+rm -f configure
+#rm -f configure.ac
+rm -f configure.ac.old
+rm -f depcomp
+rm -f install-sh
+#rm -f Makefile.am
+rm -f Makefile.am.old
+rm -f Makefile.in
+rm -f missing
+rm -f config.h
+rm -f config.log
+rm -f config.status
+rm -f Makefile
+rm -f stamp-h1
+rm -f *.o
+rm -f main
+cd $arg1 
+
+function scandir() {
+local cur_dir parent_dir workdir
+workdir=$1
+cd ${workdir}
+if [ ${workdir} = "/" ]
+then
+    cur_dir=""
+else
+    cur_dir=$(pwd)
+fi
+for dirlist in $(ls ${cur_dir})
+    do
+        if test -d ${dirlist};then
+            cd ${dirlist}
+            rm -f *.o
+            rm -f Makefile
+            rm -f Makefile.in
+            rm -rf ./.deps
+            scandir ${cur_dir}/${dirlist}
+            cd ..
+        else
+            :
+            #echo ${cur_dir}/${dirlist}
+        fi
+    done
+}
+scandir $arg1 
