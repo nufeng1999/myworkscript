@@ -2,44 +2,45 @@
 arg1=`wslpath -a $1`
 
 if [ -f "./Makefile" ];then
+    echo "--------- make clean ----------"
     make clean
     returnvalue=$?
-    echo "make clean return: $returnvalue"
+    #echo "make clean return: $returnvalue"
     if [ $returnvalue -ne 0 ]; then
-        echo "make clean failed"
+        echo -e "\033[31m make clean failed \033[0m"
         exit 1
     else
-        :
+        echo -e "\033[32m make clean succeed \033[0m"
     fi
-    #else
-        #echo "文件不存在"
 fi
-
+echo "--------- run autoconf ----------"
 /usr/bin/autoconf
 returnvalue=$?
 if [ $returnvalue -ne 0 ]; then echo -e "\033[31m autoconf failed \033[0m"; exit 1; else echo -e "\033[32m autoconf succeed \033[0m"; fi
 cd $arg1
+echo "--------- run automake ----------"
 /usr/bin/automake --add-missing
 returnvalue=$?
 if [ $returnvalue -ne 0 ]; then echo -e "\033[31m automake failed \033[0m"; exit 1; else echo -e "\033[32m automake succeed \033[0m"; fi
-echo "run ./configure" 
+echo "---------run ./configure----------"
 ./configure
 returnvalue=$?
-echo "configure return: $returnvalue"
+#echo "configure return: $returnvalue"
 if [ $returnvalue -ne 0 ]; then
-    echo "configure failed"
+    echo -e "\033[31m configure failed \033[0m"
     exit 1
 else
-    :
+    echo -e "\033[32m configure succeed \033[0m"
 fi
+echo "---------run make----------"
 make
 returnvalue=$?
-echo "make return: $returnvalue"
+#echo "make return: $returnvalue"
 if [ $returnvalue -ne 0 ]; then
-    echo "make failed"
+    echo -e "\033[31m make failed \033[0m"
     exit 1
 else
-    :
+    echo -e "\033[32m make succeed \033[0m"
 fi
-echo ------------run-------------- 
+echo ------------------------run----------------------
 ./main
