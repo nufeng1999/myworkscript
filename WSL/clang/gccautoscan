@@ -5,63 +5,49 @@
 arg1=`wslpath -a $1`
 
 cd $arg1
-# backing up old configure.ac
-if [ -f "./configure.ac" ];then
-    echo "backing up old configure.ac to configure.ac.old"
-    rm -f ./bak/configure.ac.old
-    mv ./configure.ac ./bak/configure.ac.old
-#else
-    #echo "文件不存在"
-    
-fi
+mkdir -pv ./bak
+
 if [ -f "./depcomp" ];then
     :
 else
-    #echo "文件不存在"
     cp -a /usr/share/automake-1.15/depcomp ./
 fi
 
-
-/usr/bin/autoscan
-returnvalue=$?
-#echo "autoscan return: $returnvalue"
-if [ $returnvalue -ne 0 ]; then
-    echo "autoscan failed"
-    if [ -f "./bak/configure.ac.old" ];then
-        echo "恢复以前的文件"
-        mv ./bak/configure.ac.old  ./configure.ac
-        exit 1
-    fi
+if [ -f "./configure.ac" ];then
+    :
 else
-    echo -e "\033[32m autoscan succeed \033[0m"
-    mv configure.scan configure.ac
-    acconfigfiles=`grep "AC_CONFIG_FILES(\[Makefile\])" ./configure.ac`
-    [[ $acconfigfiles =~ "" ]] && sed -i "s/AC_OUTPUT/AC_CONFIG_FILES(\[Makefile\])\nAC_OUTPUT/g" ./configure.ac
-    
-    mainfile="main.c"
-    if [ -f "./main.c" ];then
-        mainfile="main.c"
+    /usr/bin/autoscan
+    returnvalue=$?
+    #echo "autoscan return: $returnvalue"
+    if [ $returnvalue -ne 0 ]; then
+        echo -e "\033[31m autoscan failed \033[0m"
+        exit 1
     else
-        mainfile=`ls -1 *.c |head -1`
-        [[ $mainfile =~ "" ]] && mainfile="main.c" 
+        echo -e "\033[32m autoscan succeed \033[0m"
+        mv configure.scan configure.ac
+        acconfigfiles=`grep "AC_CONFIG_FILES(\[Makefile\])" ./configure.ac`
+        [[ $acconfigfiles =~ "" ]] && sed -i "s/AC_OUTPUT/AC_CONFIG_FILES(\[Makefile\])\nAC_OUTPUT/g" ./configure.ac
+        
+        mainfile="main.c"
+        if [ -f "./main.c" ]; then
+            mainfile="main.c"
+        else
+            mainfile=`ls -1 *.c |head -1`
+            [[ $mainfile =~ "" ]] && mainfile="main.c" 
+        fi
+        sed -i "s/AC_INIT(\[FULL-PACKAGE-NAME\], \[VERSION\], \[BUG-REPORT-ADDRESS\])/#AC_INIT(\[FULL-PACKAGE-NAME\], \[VERSION\], \[BUG-REPORT-ADDRESS\])\nAC_INIT($mainfile,1.0,test@qq.com)\nAM_INIT_AUTOMAKE(\[subdir-objects\])/g" ./configure.ac
+        #AM_INIT_AUTOMAKE([subdir-objects])
+        #AC_CONFIG_MACRO_DIR([m4]) #用于libtoolize
+        #AM_PROG_CC_C_O   #子目录的编译
+        #AC_PROG_LIBTOOL
+        #AC_SUBST(LIBTOOL_DEPS)
     fi
-    sed -i "s/AC_INIT(\[FULL-PACKAGE-NAME\], \[VERSION\], \[BUG-REPORT-ADDRESS\])/#AC_INIT(\[FULL-PACKAGE-NAME\], \[VERSION\], \[BUG-REPORT-ADDRESS\])\nAC_INIT($mainfile,1.0,test@qq.com)\nAM_INIT_AUTOMAKE(\[subdir-objects\])/g" ./configure.ac
-    #AM_INIT_AUTOMAKE([subdir-objects])
-    #AC_CONFIG_MACRO_DIR([m4]) #用于libtoolize
-    #AM_PROG_CC_C_O   #子目录的编译
-    #AC_PROG_LIBTOOL
-    #AC_SUBST(LIBTOOL_DEPS)
 fi
 # generate Makefile.am
-# backing up old Makefile.am
 if [ -f "./Makefile.am" ];then
-    echo "backing up old Makefile.am to Makefile.am.old"
-    rm -f ./Makefile.am.old
-    mv ./Makefile.am ./Makefile.am.old
-#else
-    #echo "文件不存在"
-    
+    exit 0
 fi
+
 cat > Makefile.am << END_TEXT
 AutoMAKE_OPTIONS= foreign
 # SUBDIRS 表示在处理目录之前，要递归处理哪些子目录
