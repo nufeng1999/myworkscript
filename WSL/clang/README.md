@@ -1,6 +1,6 @@
-### VSCode 里用于编译 WSL 环境中 C 语言项目使用到的脚本文件
-    这些脚本用于 VSCode 运行任务的tasks.json 配置，目的是使用 Windows 版本的 VSCode 构建调试 WSL 环境中 C 语言项目
-#### tasks.json
+###从 MSYS2 启动 VSCode 编译 WSL 环境中 C 语言项目使用到的脚本文件
+    这些脚本用于从 MSYS2 启动 VSCode 后，运行任务(tasks.json)的配置，目的是使用 Windows 版本的 VSCode 构建调试 WSL 环境中 C 语言项目
+#### tasks.json(当 terminal.integrated.shell.windows 为msys64里的base.exe时)
     task.json 的内容例子
     {
     "version": "2.0.0",
